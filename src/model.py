@@ -60,8 +60,7 @@ class Model(object):
             self.transition_params,
             sequence_length
         )
-        _, self.acc = tf.metrics.accuracy(decode_tags, self.tags_output
-                                          )
+        _, self.acc = tf.metrics.accuracy(decode_tags, self.tags_output)
         _, self.prec = tf.metrics.precision(self.tags_output, decode_tags)
         return decode_tags, best_score
 
@@ -94,7 +93,6 @@ class Model(object):
             self.text_length: [len(x) for x in input]
 
         }
-
         tags = session.run(self.tags, feed_dict=feed_dict)
         return tags
 
@@ -119,9 +117,5 @@ if __name__ == '__main__':
         print(loss, acc)
         tag = model.predict(np.array([[0, 1]]), session)
         print("predict ", tag)
-
-#
-# print(dy)
-# print(out, out.shape)
 
 pass
