@@ -28,7 +28,6 @@ class DataSet(object):
         self.rem = self.data_length % self.batch
         if self.rem != 0:
             self.end = self.end + 1
-        print(len(self.data))
 
     def shuffle(self):
         random.shuffle(self.data)
@@ -53,7 +52,7 @@ class DataSet(object):
             query_id_list.append([self.word2id.get(word, "<PAD>") for word in query.split(" ")])
             query_len_list.append(len(query.split(" ")))
             tag_id_list.append([self.tag2id.get(word, "<PAD>") for word in tags.split(" ")])
-            label_id_list.extend([self.label2id.get(label,"other")])
+            label_id_list.extend([self.label2id.get(label, "other")])
             pass
         return query_id_list, query_len_list, tag_id_list, label_id_list
 
@@ -69,8 +68,30 @@ class DataSet(object):
 
 if __name__ == '__main__':
     # print(3 % 2)
+    word2id = {}
+    tag2id = {}
+    label2id = {}
+    with open("../data/data.txt", encoding="utf8") as f:
+        word_list = []
+        tag_list = []
+        label_lit = []
 
+        for line in f:
+            query = line.split("\t")
+            word_list.extend(query[0].split(" "))
+            tag_list.extend(query[1].split(" "))
+            label_lit.append(query[2].strip())
+            pass
+        for id, word in enumerate(list(set(word_list))):
+            word2id[word] = id
+        for id, word in enumerate(list(set(tag_list))):
+            tag2id[word] = id
+        for id, word in enumerate(list(set(label_lit))):
+            label2id[word] = id
+    print("word2id ", word2id)
+    print("label2id ", label2id)
+    print("tag2id ", tag2id)
     for i in range(0, 2):
-        data = DataSet("../data/data.txt", {}, {}, {}, batch=2).shuffle()
+        data = DataSet("../data/data.txt", word2id, tag2id, label2id, batch=2).shuffle()
         for item_batch in data:
             print("item", item_batch)
