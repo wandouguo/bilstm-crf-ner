@@ -1,0 +1,4 @@
+我 想 吃 饭	O O O O	label
+吃 屎 吧	O O O	other
+吃 屎 a	O O O	other
+吃 屎 b	O O O	other
