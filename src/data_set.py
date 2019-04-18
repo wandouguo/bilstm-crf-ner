@@ -3,10 +3,11 @@ import numpy as np
 
 
 class DataSet(object):
-    def __init__(self, data_path, word2id, tag2id, label2id, batch=3):
+    def __init__(self, data_path, word2id, tag2id, label2id, max_len, batch=3):
         self.batch = batch
         self.offset = 0
         self.data = []
+        self.max_len = max_len
         if isinstance(word2id, dict):
             self.word2id = word2id
             self.tag2id = tag2id
@@ -49,10 +50,25 @@ class DataSet(object):
         label_id_list = []
         for data in data_list:
             query, tags, label = data
-            query_id_list.append([self.word2id.get(word, "<PAD>") for word in query.split(" ")])
-            query_len_list.append(len(query.split(" ")))
-            tag_id_list.append([self.tag2id.get(word, "<PAD>") for word in tags.split(" ")])
-            label_id_list.extend([self.label2id.get(label, "other")])
+            query_list = [self.word2id.get(word, 0) for word in query.split(" ")]
+            tags_list = [self.tag2id.get(word, 0) for word in tags.split(" ")]
+            text_len = len(query_list)
+            if text_len != len(tags_list):
+                print("len(query_list)!=len(tags_list) " + data)
+                continue
+                pass
+            if text_len > self.max_len:
+                query_list = query_list[:self.max_len]
+                tags_list = tags_list[:self.max_len]
+                query_len_list.append(self.max_len)
+            else:
+                query_list.extend([0] * (self.max_len - text_len))
+                tags_list.extend([0] * (self.max_len - text_len))
+                query_len_list.append(text_len)
+            label_id_list.extend([self.label2id.get(label.strip(), 1)])
+            query_id_list.append(query_list)
+            tag_id_list.append(tags_list)
+
             pass
         return query_id_list, query_len_list, tag_id_list, label_id_list
 
@@ -91,7 +107,12 @@ if __name__ == '__main__':
     print("word2id ", word2id)
     print("label2id ", label2id)
     print("tag2id ", tag2id)
-    for i in range(0, 2):
-        data = DataSet("../data/data.txt", word2id, tag2id, label2id, batch=2).shuffle()
+    for i in range(0, 1):
+        data = DataSet("../data/data.txt", word2id, tag2id, label2id, max_len=32, batch=7).shuffle()
         for item_batch in data:
-            print("item", item_batch)
+            query_id_list, query_len_list, tag_id_list, label_id_list = item_batch
+            print("query_id_list: ", np.array(query_id_list).shape)
+            print("query_len_list: ", np.array(query_len_list).shape)
+            print("tag_id_list: ", np.array(tag_id_list).shape)
+            print("label_id_list: ", np.array(label_id_list).shape)
+            break

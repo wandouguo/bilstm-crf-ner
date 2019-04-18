@@ -77,6 +77,7 @@ class Model(object):
 
         optimizer = tf.train.AdamOptimizer(learning_rate=0.01)
         self.op = optimizer.minimize(self.crf_loss)
+        return self.op, self.crf_loss,
 
     def fit(self, batch_data, session):
         feed_dict = {
