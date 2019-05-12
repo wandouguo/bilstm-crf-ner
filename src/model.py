@@ -53,6 +53,7 @@ class Model(object):
     def _crf_loss(self):
         _log_likelihood = self._crf_encode(self.unary, self.tags_output, self.text_length)
         self.crf_loss = tf.reduce_mean(-_log_likelihood)
+        return self.crf_loss
 
     def _crf_decode(self, input, sequence_length):
         decode_tags, best_score = tf.contrib.crf.crf_decode(
